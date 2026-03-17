@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import colors from "colors";
+import userRouter from "./routes/userRoutes.js";
 
 connectDB();
 
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
   res.send("Api is working");
 });
 
+app.use("/api/users", userRouter);
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`.yellow.bold);
 });
