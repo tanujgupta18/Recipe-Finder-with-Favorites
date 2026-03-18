@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -18,6 +19,22 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    const emailRegex = /^\S+@\S+\.\S+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
+
     const userExists = await User.findOne({ email });
 
     if (userExists) {
@@ -27,10 +44,13 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const user = await User.create({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     if (user) {
@@ -41,11 +61,16 @@ export const registerUser = async (req, res) => {
         token: generateToken(user._id),
       });
     } else {
-      res.status(400);
-      res.send({ success: false, message: "Invalid user data" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
     }
   } catch (error) {
-    res.status(res.statusCode || 500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -56,16 +81,22 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      res.status(200).json({
+      return res.status(200).json({
         _id: user.id,
         name: user.name,
         email: user.email,
         token: generateToken(user._id),
       });
     } else {
-      res.status(400).json("Invalid Credentials");
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
