@@ -1,16 +1,14 @@
 import mongoose from "mongoose";
-import colors from "colors";
+import chalk from "chalk";
 
 const connectDB = async () => {
   try {
-    mongoose.connection.on("connected", () => {
-      console.log(
-        `MongoDB Connected: ${mongoose.connection.host}`.cyan.underline,
-      );
-    });
+    mongoose.connection.on("connected", () =>
+      console.log(chalk.green("Database Connected")),
+    );
     await mongoose.connect(`${process.env.MONGODB_URI}/recipe-finder`);
   } catch (error) {
-    console.error(`Error: ${error.message}`.red.bold);
+    console.log(chalk.red(error.message));
   }
 };
 

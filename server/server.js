@@ -1,10 +1,13 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import dns from "dns";
+import chalk from "chalk";
+
 import connectDB from "./config/db.js";
-import colors from "colors";
 import userRouter from "./routes/userRoutes.js";
 
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 connectDB();
 
 const app = express();
@@ -20,5 +23,5 @@ app.get("/", (req, res) => {
 
 app.use("/api/users", userRouter);
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`.yellow.bold);
+  console.log(chalk.yellow.bold(`Server running at http://localhost:${PORT}`));
 });
