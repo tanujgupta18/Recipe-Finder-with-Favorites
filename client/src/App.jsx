@@ -1,21 +1,16 @@
-import React, { useEffect } from "react";
-import { searchRecipes } from "./services/recipeService";
+import { Route, Routes } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import RecipePage from "./pages/RecipePage";
 
 const App = () => {
-  useEffect(() => {
-    const fetchInitialRecipes = async () => {
-      console.log("Fetching initial data...");
-
-      const recipes = await searchRecipes("pasta");
-      console.log("Fetched recipes:", recipes);
-    };
-
-    fetchInitialRecipes();
-  }, []);
-
   return (
     <div>
-      <h1>Recipe Finder</h1>
+      {
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/recipe/:recipeId" element={<RecipePage />} />
+        </Routes>
+      }
     </div>
   );
 };
