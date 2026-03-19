@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getRecipeId } from "../services/recipeService";
+import Loader from "../components/Loader";
 
 const RecipePage = () => {
   const { recipeId } = useParams();
@@ -38,11 +39,7 @@ const RecipePage = () => {
   }
 
   if (loading) {
-    return (
-      <div className="text-center text-xl mt-20 text-gray-600">
-        Loading recipe...
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!recipe) {
