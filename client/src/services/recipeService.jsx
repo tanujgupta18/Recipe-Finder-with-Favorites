@@ -15,3 +15,13 @@ export const searchRecipes = async (query) => {
     return [];
   }
 };
+
+export const getRecipeId = async (id) => {
+  try {
+    const res = await recipeApi.get(`/lookup.php?i=${id}`);
+    return res.data.meals ? res.data.meals[0] : null;
+  } catch (error) {
+    console.error(`Error fetching recipe by ID ${id}:`, error);
+    return null;
+  }
+};
