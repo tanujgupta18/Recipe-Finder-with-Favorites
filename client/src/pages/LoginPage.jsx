@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { login } from "../services/authService";
+import React, { useContext, useState } from "react";
+import { login as loginService } from "../services/authService";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +10,9 @@ const LoginPage = () => {
   });
 
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     if (error) setError(null);
@@ -22,13 +27,13 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      const data = await login(formData);
+      const data = await loginService(formData);
       if (data.token) {
         localStorage.setItem("token", data.token);
-        console.log("Token saved to localStorage");
+        login(data);
+        navigate("/");
       }
     } catch (err) {
-      console.error(err);
       setError(
         err.message || "An unexpected error occurred. Please try again.",
       );
