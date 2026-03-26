@@ -11,7 +11,7 @@ const parseJwt = (token) => {
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(second);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,7 +32,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = () => {
+  const login = (userData) => {
+    setUser(userData);
+  };
+
+  const logout = () => {
     setUser(null);
     localStorage.removeItem("token");
   };
