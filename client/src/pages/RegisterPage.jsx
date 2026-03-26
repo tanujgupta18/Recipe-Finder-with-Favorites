@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { register } from "../services/authService";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -7,7 +8,10 @@ const RegisterPage = () => {
     password: "",
   });
 
+  const [error, setError] = useState(null);
+
   const handleChange = (e) => {
+    if (error) setError(null);
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -16,6 +20,19 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    try {
+      const data = await register(formData);
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        console.log("Token saved to localStorage after registration");
+      }
+    } catch (error) {
+      console.error(error);
+      setError(
+        error.message || "An unexpected error occurred. Please try again.",
+      );
+    }
   };
 
   return (
@@ -27,6 +44,12 @@ const RegisterPage = () => {
         <h2 className="text-2xl font-bold mb-6 text-gray-800">
           Create an account
         </h2>
+
+        {error && (
+          <p className="bg-red-100 text-red-700 px-4 py-2 mb-4 border border-red-300 rounded-lg text-center">
+            {error}
+          </p>
+        )}
 
         <div className="mb-4 text-left">
           <label className="block mb-1 font-semibold text-gray-600">Name</label>
@@ -40,7 +63,6 @@ const RegisterPage = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
           />
         </div>
-
         <div className="mb-4 text-left">
           <label className="block mb-1 font-semibold text-gray-600">
             Email
@@ -55,7 +77,6 @@ const RegisterPage = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
           />
         </div>
-
         <div className="mb-6 text-left">
           <label className="block mb-1 font-semibold text-gray-600">
             Password
@@ -70,7 +91,6 @@ const RegisterPage = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
           />
         </div>
-
         <button
           type="submit"
           className="w-full py-3 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition"

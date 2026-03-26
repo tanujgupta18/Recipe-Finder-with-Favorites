@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { login } from "../services/authService";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -6,15 +7,32 @@ const LoginPage = () => {
     password: "",
   });
 
+  const [error, setError] = useState(null);
+
   const handleChange = (e) => {
+    if (error) setError(null);
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    try {
+      const data = await login(formData);
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        console.log("Token saved to localStorage");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(
+        err.message || "An unexpected error occurred. Please try again.",
+      );
+    }
   };
 
   return (
@@ -24,6 +42,12 @@ const LoginPage = () => {
         className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg text-center"
       >
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Welcome Back!</h2>
+
+        {error && (
+          <p className="bg-red-100 text-red-700 px-4 py-2 mb-4 border border-red-300 rounded-lg text-center">
+            {error}
+          </p>
+        )}
 
         <div className="mb-4 text-left">
           <label className="block mb-1 font-semibold text-gray-600">
