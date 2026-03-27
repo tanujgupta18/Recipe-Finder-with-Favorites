@@ -44,13 +44,10 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     const user = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password,
     });
 
     if (user) {
@@ -77,6 +74,13 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please add email and password",
+      });
+    }
 
     const user = await User.findOne({ email });
 
